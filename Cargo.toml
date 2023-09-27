@@ -1,0 +1,14 @@
+[package]
+name = "protoc-rs"
+version = "0.3.0"
+edition = "2021"
+
+authors = ["ThinkParQ GmbH"]
+homepage = "https://github.com/thinkparq/protoc-rs"
+description = "Protobuf Rust compiler, based on tonic_build"
+readme = "README.md"
+publish = false
+
+[dependencies]
+tonic-build = "0"
+clap = { version = "4", features = ["derive"]}
