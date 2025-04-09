@@ -33,7 +33,7 @@ The root library file is always the default name `lib.rs`.
 2. Compile the `.proto` files. The command works similar to `protoc`. If they are located under
 `proto/`, the command would look like this:
    ```
-   protoc-rs compile -I proto/ --out=rust/ proto/*.proto
+   protoc-rs -I proto/ --out=rust/ proto/*.proto
    ```
    All compiled proto files must be passed to a single call of the command so the `lib.rs` file can
    be generated accordingly. Also, all source files must be put under one of the specified include

@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::Parser;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
@@ -6,23 +6,10 @@ use std::path::{Path, PathBuf};
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct CmdArgs {
-    #[command(subcommand)]
-    mode: Mode,
-}
-
-#[derive(Debug, Subcommand)]
-enum Mode {
-    Compile(Compile),
-}
-
-/// Compiles .proto files into Rust
-#[derive(Parser, Debug)]
-struct Compile {
     /// The .proto files to compile.
     ///
-    /// The base paths must be literally the same as one of the given
-    /// include dirs, otherwise compilation will fail. Interchanging absolute and relative
-    /// paths is not allowed.
+    /// The base paths must be the same as one of the given include dirs, otherwise compilation will
+    /// fail. Interchanging absolute and relative paths is not allowed.
     proto_file: Vec<PathBuf>,
     /// Protobuf include dirs
     #[arg(long, short = 'I')]
@@ -34,19 +21,16 @@ struct Compile {
 
 fn main() {
     let args = CmdArgs::parse();
-
-    match args.mode {
-        Mode::Compile(ref args) => compile_protos(args),
-    }
+    compile_protos(&args)
 }
 
 /// Compiles .proto files into Rust
-fn compile_protos(args: &Compile) {
+fn compile_protos(args: &CmdArgs) {
     std::fs::create_dir_all(&args.out).ok();
 
     tonic_build::configure()
         .out_dir(&args.out)
-        .compile(&args.proto_file, &args.include)
+        .compile_protos(&args.proto_file, &args.include)
         .unwrap();
 
     generate_lib(&args.out, true);
@@ -81,7 +65,7 @@ fn generate_lib(src: impl AsRef<Path>, root: bool) {
 
         if path.is_dir()
             || (path.is_file()
-                && path.extension().unwrap() == "rs"
+                && path.extension().is_some_and(|ext| ext == "rs")
                 && !&["lib.rs", "mod.rs"].contains(&path.file_name().unwrap().to_str().unwrap()))
         {
             let file_stem = path.file_stem().unwrap().to_str().unwrap();
