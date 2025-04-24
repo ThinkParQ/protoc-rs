@@ -6,12 +6,15 @@ Protobuf definitions need to be compiled into multiple languages and Rust being 
 # Requirements
 
 The Cargo manifest file, `Cargo.toml` must exist (it will not be generated). It must depend on
-[tonic](https://docs.rs/tonic/latest/tonic/) and [prost](https://docs.rs/prost/latest/prost/), e.g.
+[tonic](https://docs.rs/tonic/latest/tonic/), [prost](https://docs.rs/prost/latest/prost/) and
+[prost-types](https://docs.rs/prost/latest/prost-types/). Their version requirements must match
+the ones used by `tonic-build` in this crate (see `Cargo.toml`).
 
 ```toml
 [dependencies]
-tonic = "0"
-prost = "0"
+tonic = "0.13"
+prost = "0.13"
+prost-types = "0.13"
 ```
 
 If the repository contains protobuf generated files for multiple languages, it is recommended to
