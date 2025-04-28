@@ -26,6 +26,8 @@ fn main() {
 
 /// Compiles .proto files into Rust
 fn compile_protos(args: &CmdArgs) {
+    check_dep_versions();
+
     std::fs::create_dir_all(&args.out).ok();
 
     tonic_build::configure()
@@ -34,6 +36,31 @@ fn compile_protos(args: &CmdArgs) {
         .unwrap();
 
     generate_lib(&args.out, true);
+}
+
+/// Checks that the versions of the tonic/prost dependencies set in Cargo.toml match the ones that
+/// are built in and used to generate the code
+fn check_dep_versions() {
+    let metadata = cargo_metadata::MetadataCommand::new()
+        .exec()
+        .expect("Invalid cargo metadata");
+
+    for dep in metadata
+        .root_package()
+        .unwrap()
+        .dependencies
+        .iter()
+        .filter(|e| ["tonic", "prost", "prost-types"].contains(&e.name.as_str()))
+    {
+        if dep.req.to_string() != env!("TONIC_BUILD_VERSION") {
+            panic!(
+                "Dependency `{}`s version requirement ({}) does not match the builtins `tonic-build` version requirement ({})",
+                dep.name,
+                dep.req,
+                env!("TONIC_BUILD_VERSION")
+            );
+        }
+    }
 }
 
 /// Generates the necessary modules files in the Rust protobuf file structure to be able
