@@ -30,7 +30,7 @@ fn compile_protos(args: &CmdArgs) {
 
     std::fs::create_dir_all(&args.out).ok();
 
-    tonic_build::configure()
+    tonic_prost_build::configure()
         .out_dir(&args.out)
         .compile_protos(&args.proto_file, &args.include)
         .unwrap();
@@ -50,11 +50,11 @@ fn check_dep_versions() {
         .unwrap()
         .dependencies
         .iter()
-        .filter(|e| ["tonic", "prost", "prost-types"].contains(&e.name.as_str()))
+        .filter(|e| ["tonic", "prost", "tonic-prost", "prost-types"].contains(&e.name.as_str()))
     {
         if dep.req.to_string() != env!("TONIC_BUILD_VERSION") {
             panic!(
-                "Dependency `{}`s version requirement ({}) does not match the builtins `tonic-build` version requirement ({})",
+                "Dependency `{}`s version requirement ({}) does not match the builtins `tonic-prost-build` version requirement ({})",
                 dep.name,
                 dep.req,
                 env!("TONIC_BUILD_VERSION")
