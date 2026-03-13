@@ -6,7 +6,7 @@ fn main() {
         .unwrap()
         .dependencies
         .iter()
-        .find(|e| &e.name == "tonic-build")
+        .find(|e| &e.name == "tonic-prost-build")
         .unwrap()
         .req
         .to_string();
